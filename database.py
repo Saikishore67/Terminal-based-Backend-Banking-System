@@ -5,8 +5,8 @@ import datetime
 # --- IMPORTANT: FILL IN YOUR MYSQL DETAILS HERE ---#
 db_config = {
     "host": "localhost",
-    "user": "root",      # Replace with your MySQL username (e.g., "root")
-    "password": "Zoommeet@@@2006",  # Replace with your MySQL password
+    "user": "user-name",      # Replace with your MySQL username (e.g., "root")
+    "password": "your-password",  # Replace with your MySQL password
     "database": "skr_bank_db"     # The database you just created
 }
 
