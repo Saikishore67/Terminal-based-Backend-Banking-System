@@ -2,7 +2,7 @@ import mysql.connector
 from mysql.connector import Error
 import datetime
 
-# --- IMPORTANT: FILL IN YOUR MYSQL DETAILS HERE ---#
+
 db_config = {
     "host": "localhost",
     "user": "user-name",      # Replace with your MySQL username (e.g., "root")
@@ -11,7 +11,6 @@ db_config = {
 }
 
 def get_db_connection():
-    """Creates and returns a connection to the MySQL database."""
     try:
         conn = mysql.connector.connect(**db_config)
         return conn
@@ -20,7 +19,6 @@ def get_db_connection():
         return None
 
 def init_db():
-    """Initializes the database and creates the tables if they don't exist."""
     conn = get_db_connection()
     if conn is None:
         print("Could not connect to the database. Aborting initialization.")
@@ -75,7 +73,6 @@ def init_db():
         print("Database connection closed.")
 
 
-# --- Functions to interact with the database will be added below ---
 
 def add_customer(name, address, email, phone):
     """Adds a new customer to the database."""
