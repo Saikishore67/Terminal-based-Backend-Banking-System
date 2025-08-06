@@ -1,0 +1,24 @@
+USER INTERFACE (OPENING) - MAIN MENU
+1. create new customer
+2. select existing customer
+3. exit
+
+> 1. create new customer
+name:
+address:
+email:
+phone:
+>> error handling
+
+> 2. select existing customer
+show customer list: (select by numbers)
+after selecting
+>> 1. create new account
+>> 2. deposit
+>> 3. withdraw
+>> 4. view account details
+>> 5. back to main menu
+>>> error handling
+
+> 3. exit
+>> Thank you for using our services. - SKR Bank.

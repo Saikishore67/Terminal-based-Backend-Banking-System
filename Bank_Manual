@@ -1,0 +1,186 @@
+=================File 1 = models.py=================
+> Has 3 classes, and imported module "datetime".
+> Customer, Account, Transactions are the 3 classes.
+> Attribute inside the classes are
+    1. Customer = name, id, address, email, phone
+    2. Account = id, account_type, balance, customer_id
+    3. Transactions = id, type, amount, timestamp, account_id
+    >> customer_id given to each customer to access more than one account under the customer name.
+    >> account_id given for each account held by the customer. (example - Sai Kishore (1-cust_id), savings(1-acc_id), current(2-acc_id)).
+> Phone number in Customer to be string(str).
+> In Customer Class, "self.accounts = []" stores all the accounts owned by the customer. And, Hence important. Same goes for self.transactions in Accounts.
+> "self.customer_id" in Accounts class and "self.account_id" in Transaction class is to link the account to customer and transaction to the account, for linking them.
+
+=================File 2 = database.py=================
+> Using MySQL for database storage, and accessing information.
+> Important modules to me imported = mysql.connector, error from mysql.connector.
+> Link the database with user, password and name of database, making sure, db is already created in MySQL using prompt.
+
+> Create "get_db_connection()" function, which creates and returns to MySQL database.
+> Connect the database by running "conn = mysql.connector.connect(**db_config)", with error handling "print(f"Error connecting to MySQL database: {e}")".
+
+> Create "init_db" function, which initiates the database and created tables if not already present, by the code inside the function.
+> Create an object "conn = get_db_connection()" which calls the earlier function just created.
+> For someone to implement SQL Queries, cursor object has to be created. And hence, "cursor = conn.cursor()".
+> Now "print("Successfully connected to the database. Creating tables...")" as the conn object created now established a connection with the database, and cursor object created can give access to making changes by creating tables in the database.
+> Creart tables for respecting models (Customer, Accounts, Transactions)
+> Do error handling, and finally close the cursor and conn, mentioning "Database connection closed".
+
+> Creating functions to interact with the database.
+> Create function "add_customer" mentioning attributes (name, address, email, phone)/
+> Establish a connection using "conn = get_db_connection()".
+> Create cursor object, for making changes using SQL Queries.
+> Execute the added/changed information in the database by "cursor.execute(...)". and "conn.commit" for saving the added/changed information into the databse.
+
+> Important step before running the main file.
+    1. Initiate the database, By running "database.py" file and then the "main.py" file.
+    2. The database.py is only be initiated if you run it here and not import it. Significance of "if __name__ == "__main__":".
+    3. Call init_db() for initiating database.
+
+=================File 3 = services.py=================
+> "services.py" is the main brain of the bank, telling what to happen when user gives input.
+> Import the following:
+    > from database import get_db_connection, add_customer
+    > from models import Customer, Account, Transaction
+    > from mysql.connector import Error
+    > import datetime
+
+> Create "create_new_customer" function with "(name,address, email, phone)" attributes in them.
+> Create an object "customer_id" to call "add_customer" - from database with attributes.
+> If customer_id return "Customer(name, customer_id, address, email, phone)". MySQL creates a customer_id because of the MySQL commands.
+
+> Create "get_all_customers" function so the user can select which customer user wants to handle, where the customers list is mentioned infront of the user.
+> Establish a connection to the database, by running "get_db_connection".
+> Create cursor, and execute, retrieve all the information from "customers" in database, and assign them to their respective names, by running a loop and creating "customer_obj" and calling "Customer" while feeding the entered information.
+> Append the data to a open python list "customers = []".
+> Error handling and close the cursor and conn.
+
+> Create "get_customer_by_id" function with "(customer_id)" attribute.
+> Establish connection = "conn = get_db_connection()", and cursor.
+> Execute the cursor to find the match for the customer_id given with the database, and extract the customer information.
+> Assigning what is what in "Customer".
+> Error handling and close the conn and cursor.
+
+> Create "create_account_for_customer" function with "(customer_id, account_type, initial_deposit=0.0)" attributes.
+> Connect to the database. Using "conn = get_db_connection()".
+> Establish "cursor" for reading SQL queries.
+> Start a transaction, using "conn.start_transaction()". Give "if" statement to see if initial deposit is more than "0".
+> If more than 0, Execute SQL Command that adds the user input to the database. (account_type, balance, customer_id).
+> If not, Execute SQL Command to add, account_type and customer_id to database. But the initial deposit in this case will be taken to be "0.0" as it is the default input from the attribute.
+> Extract the account_id by running "account_id = cursor.lastrowid". which gives you a number which will be assigned to your account, for customers who own more than 1 account with the bank.
+> Insert the initial deposit to the "Transactions" table in database, with the "(type, amount, timestamp,account_id)", and commit this information to database.
+> Return Account(id, account_id, balance, customer_id) with the assigned values from models.py.
+> Error handling and closure of conn and cursor.
+
+> Create "deposit_to_account" function with "(account_id, amount)" attributes as they are the information system will be needing to deposit the amount to account_id.
+> Establish a connection with the database. And cursor, to execute SQL Commands.
+> Start transaction, and Execute SQL Command, Where balance is balance + amount for the given "account_id".
+> Execute another SQL Command, for adding information to Transactions in database. Since, We have to update the account balance (because of deposition of amount) and transactions, so the Customer can check for recent transactions done from his account with respective account_id.
+> Commit the information to the database. Return a "Succesfully deposited".
+> Error handling and closure of cursor and conn.
+
+> Create "get_accounts_by_customer" function and pass "customer_id" attribute in it.
+> Establish a connection to the database and cursor for executing MySQL Commands.
+> Execute SQL Command to required details from accounts where customer_id is matched, fetchall of it.
+> Create a open list. Assign the values (ex. id = row[0], account_type = row[1]....), Append all of the assigned data to accounts (the open list).
+> Error handling and closure of cursor and conn.
+
+> Create "withdraw_from_account" function with "(account_id, amount)" attributes.
+> Establish a connection with the database.
+> Run "conn.start_transactions()", and establish cursor.
+> Execute MySQL Command, To retrieve balance from accounts for account_id. "result = cursor.fetchone()". If not, "Account not found.".
+> Create new variable "current_balance = float(result[0])". So "current_variable" can be used repeatedly without raw data from result bothering us, as now we have assigned it.
+> If "current_balance < amount", print "Insuffieient funds. Current balance = ...........", return False.
+> Execute SQL Command, for withdrawal of amount from balance. And balance updating "(Balance = Balance - amount)".
+> Execute another SQL Command so the withdrawal can be added to transactions. return True.
+> Error handling and closure of cursor and conn with extra layers of code because withdrawal has to be handled with atmost safety. Orelse, has potential to cause cascading errors.
+
+> Create "get_account_details" function with "(account_id)" attribute.
+> Establish cursor and execute SQL Command to retrieve id, account_type, balance, customer_id from accounts for account_id.
+> Create variable, "account_row = cursor.fetchone()".
+> Execute another SQL Command to retrieve id, type, amount, timestamp, account_id from transactions where account_id, arranged based on timestamp.
+> Create variable, "transactions_rows = cursor.fetchone()".
+> Assign the values, for account and transactions, raw data converted to proper assigned data for retireval at time of user-demand.
+> Append the new transactions to the list of transactions for a specific account.
+> Error handling and close cursor and conn.
+
+=================File 4 = cli.py=================
+> Create "main_menu" function, and don't pass any attributes.
+> Enter "while True:", followed by:
+    >1. Create new Customer
+    >2. Select existing Customer
+    >3. Exit
+> Get input from the user.
+
+> Create "create_new_customer_cli" function and pass no attributes.
+> Get input for the following:
+    > name:
+    > address:
+    > email:
+    > phone:
+> Create a object "customer" and pass all the attributes for the "create_new_customer(....)" function in services.py file. (customer = create_new_customer(name, address, email, phone)).
+> Error handling
+
+> Create "select_existing_customer" function and pass no attributes.
+> Create a object "customers" with "get_all_customers()" from services.py, which retrieves all the customer information from the database.
+> Run a loop to present all the customer list to the user to chose.
+> take input as "selected_id".
+> Create a new object "customer" with "get_customer_by_id" from service.py file, while passing "selected_id".
+> Error handling ("if not customer, print "customer not found"")
+> Present the selected customer name and id to the user.
+> Run "customer_menu(customer)", which will be created in the next step.
+
+> Create "customer_menu" function with "customer" attribute.
+> While True, followed by:
+    > CUSTOMER MENU {customer.name}
+    >1. Create account
+    >2. Deposit
+    >3. Withdraw
+    >4. Check balance
+    >5. Back to main menu
+> Get user input.
+> If user choice is 1:
+    > Account type (savings/current) - user input
+    > Initial amount (0 or anything) - user input / Invalid input
+> Create a new object "account" with "create_account_for_customer" with "(customer.id, account_type, initial_amount)". The "customer.id" here refers to customer id of the customer because of the customer object created previously "customer = get_customer_by_id", Refer services.py for furthur reference.
+> Error handling.
+
+> If user choice is 2:
+    > Enter account ID to which to deposit (acc_id) - user input
+    > Amount - user input
+> If deposit_to_account(acc_id, amount), print "Deposit successful" and Error handling.
+
+> If user choice is 3:
+    > Enter account ID to which to withdraw (acc_id) - user input
+    > Amount - user input
+> If withdraw_from_account(acc_id, amount), print "Withdraw successful" and Error handling.
+
+> If user choice is 4:
+    > Enter account ID to view details (acc_id) - user input
+> Create a object "account" for "get_account_details(acc_id)". (account = get_account_details(acc_id)).
+> If account: (print the following)
+    > Account ID
+    > Type
+    > Balance
+    > Customer_id
+    > Recent Transactions (run a loop to present all the transactions to the user).
+
+> If user choice is 5:
+> break. Else, print "invalid output".
+
+> if __name__ == "__main__":
+> main_menu()
+> Meaning, the "main_menu()" will only run, when the name of the file is "main.py" refering to "__main__".
+
+=================File 5 = main.py=================
+> From cli import:
+    > main_menu
+    > create_new_customer_cli
+    > select_existing_customer
+
+> Create "main" function.
+> while True:
+> Assign "choice = main_menu()",
+> If choice == 1: create_new_customer_cli()
+> If choice == 2: select_existing_customer()
+> If choice == 3: Thank you for using our services. - SKR Bank.
