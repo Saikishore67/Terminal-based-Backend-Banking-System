@@ -270,3 +270,82 @@ def get_account_details(account_id):
     finally:
         cursor.close()
         conn.close()
+
+#============DELETION OF CUSTOMER==========
+def closing_account(account_id):
+    conn = get_db_connection()
+    if conn is None:
+        return False
+
+    cursor = conn.cursor()
+    try:
+        conn.start_transaction()
+
+        cursor.execute('SELECT id, balance FROM accounts WHERE id = %s', (account_id,))
+        account = cursor.fetchone()
+
+        if not account:
+            print(f"Error: Account with ID {account_id} not found in database.")
+            conn.rollback()
+            return False
+
+        balance = float(account[1])
+        if balance != 0:
+            if balance > 0:
+                print(f"Error: Cannot delete a account with remaining balance of ${balance:.2f}")
+                print(f"Please withdraw all the funds before closing your account.")
+                conn.rollback()
+                return False
+            else:
+                print(f"Error: Account has negative balance of ${balance:.2f}")
+                print(f"Please resolve the negative balance before closing your account.")
+                conn.rollback()
+                return False
+
+        cursor.execute('DELETE FROM transactions WHERE account_id = %s', (account_id,))
+
+        cursor.execute("DELETE FROM accounts WHERE id = %s", (account_id,))
+        conn.commit()
+
+        print(f"Successfully closed account with ID : {account_id}")
+        return True
+
+    except Error as e:
+        conn.rollback()
+        print(f"Error deleting account: {e}")
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+
+#==========DELETING CUSTOMER========
+def closing_customer(customer_id):
+    conn = get_db_connection()
+    if conn is None:
+        return False
+
+    cursor = conn.cursor()
+    try:
+        conn.start_transaction()
+
+        cursor.execute('SELECT id FROM accounts WHERE customer_id = %s', (customer_id,))
+        account = cursor.fetchone()
+
+        if account:
+            print(f"Error: Account with ID {account[0]} found in database.")
+            print(f"Please close your account before closing customer.")
+            conn.rollback()
+            return False
+        else:
+            cursor.execute('DELETE FROM customers WHERE id = %s', (customer_id,))
+            conn.commit()
+            print(f"Successfully closed customer with ID : {customer_id}")
+            return True
+    except Error as e:
+        conn.rollback()
+        print(f"Error closing customer: {e}")
+        return False
+    finally:
+        cursor.close()
+        conn.close()
