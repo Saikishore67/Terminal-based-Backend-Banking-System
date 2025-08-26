@@ -50,7 +50,9 @@ def customer_menu(customer):
         print("2. Deposit")
         print("3. Withdraw")
         print("4. Check balance")
-        print("5. Back to main menu")
+        print("5. Closing account")
+        print("6. Closing Customer")
+        print("7. Back to main menu")
         choice = input("Enter choice: ")
 
         if choice == "1":
@@ -106,6 +108,22 @@ def customer_menu(customer):
                 print("Account not found.")
 
         elif choice == "5":
+            acc_id = input("Enter Account Id to close: ")
+            success = closing_account(acc_id)
+            if success:
+                print(f"Closing account {acc_id} successful.")
+            else:
+                print("Error closing account")
+
+        elif choice == "6":
+
+            success = closing_customer(customer.id)
+            if success:
+                print(f"Closing customer {customer.id} successful.")
+            else:
+                print("Error closing customer")
+
+        elif choice == "7":
             break
         else:
             print("Invalid option.")
@@ -113,6 +131,3 @@ def customer_menu(customer):
 
 if __name__ == "__main__":
     main_menu()
-
-
-
