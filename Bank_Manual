@@ -104,6 +104,20 @@
 > Append the new transactions to the list of transactions for a specific account.
 > Error handling and close cursor and conn.
 
+> Crete "closing_account" function with "(account_id)" attribute.
+> Establish cursor and execute SQL Commans to retrieve id, balance from accounts for the respective id. And cursor.fetchone()
+> If account not found, return false with error message.
+> If balance is not 0. print an error message mentioning, account with exixting balance cannot be close. orelse account has negative balance, same where account cannot be closed.
+> Run an SQL Command to delete the transactions and account if the above case was not executed.
+> Comming the changes by running conn.commit().
+> Error handling and close cursor and conn.
+
+> Create "closing_customer" function with "(customer_id)" as attribute.
+> Establish cursor for database connections and execute SQL Command to retrieve if from account for the respective account id.
+> If account found, customer cannot be closed, so print error message. followed by rollback().
+> If not the above statement, execute the SQL Command to deleted the customer from the database.
+> Error handling and close cursor and conn.
+
 =================File 4 = cli.py=================
 > Create "main_menu" function, and don't pass any attributes.
 > Enter "while True:", followed by:
@@ -165,7 +179,14 @@
     > Customer_id
     > Recent Transactions (run a loop to present all the transactions to the user).
 
-> If user choice is 5:
+> If user choise is 5:
+    > Enter account Id to close - user input.
+> If success, print "Closing account (acc_id) successful.". and error handling.
+
+> If user choice is 6:
+> If success, print "Closing customer (customer.id) successful.", and error handling.
+
+> If user choice is 7:
 > break. Else, print "invalid output".
 
 > if __name__ == "__main__":
